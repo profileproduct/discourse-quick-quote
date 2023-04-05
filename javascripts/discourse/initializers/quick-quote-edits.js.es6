@@ -30,7 +30,9 @@ export default {
               !topic.get("details.can_create_post") ||
               (post && post.get("post_number") === 1) // Don't quick quote the first post
             ) {
-              return;
+              // If the post is the first post or other conditions are not met, simply return without quick-quoting
+              composerController.open({ action: Composer.REPLY });
+              return false;
             }
 
             var quotedText = "";
