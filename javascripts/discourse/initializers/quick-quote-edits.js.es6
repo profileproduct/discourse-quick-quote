@@ -24,23 +24,26 @@ export default {
 
             this.appEvents.trigger("page:compose-reply", topic);
 
-            if (
-  !postStream ||
-  !topic ||
-  !topic.get("details.can_create_post") ||
-  (post && post.get("post_number") === 1) // Don't quick quote the first post
-) {
-  // If the post is the first post or other conditions are not met, simply return without quick-quoting
-  composerController.open({ action: Composer.REPLY });
-  return false;
-} else {
-  // Otherwise, open the composer with quick-quoting disabled
-  composerController.open({
-    action: Composer.REPLY,
-    disableQuickQuote: true
-  });
-  return false;
-}
+           api.modifyClass("component:composer-editor", {
+  didInsertElement() {
+    if (this.get("model.post.post_number") === 1) {
+      this.set("model.composer.minimized", false);
+      this.set("model.composer.text", "");
+      return;
+    }
+    this._super(...arguments);
+  },
+});
+
+api.modifyClass("controller:composer", {
+  openQuickQuote(post) {
+    if (post && post.get("post_number") === 1) {
+      this.open({ action: Composer.REPLY });
+    } else {
+      this._super(...arguments);
+    }
+  },
+});
 
 
             var quotedText = "";
