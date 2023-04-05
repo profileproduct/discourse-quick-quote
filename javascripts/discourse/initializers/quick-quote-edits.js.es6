@@ -27,7 +27,8 @@ export default {
             if (
               !postStream ||
               !topic ||
-              !topic.get("details.can_create_post")
+              !topic.get("details.can_create_post") ||
+              (post && post.get("post_number") === 1) // Don't quick quote the first post
             ) {
               return;
             }
