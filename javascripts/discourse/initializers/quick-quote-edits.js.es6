@@ -24,24 +24,23 @@ export default {
 
             this.appEvents.trigger("page:compose-reply", topic);
 
-           api.modifyClass("component:composer-editor", {
-  didInsertElement() {
-    if (this.get("model.post.post_number") === 1) {
-      this.set("model.composer.minimized", false);
-      this.set("model.composer.text", "");
-      return;
-    }
-    this._super(...arguments);
-  },
-});
-
-api.modifyClass("controller:composer", {
-  openQuickQuote(post) {
-    if (post && post.get("post_number") === 1) {
-      this.open({ action: Composer.REPLY });
-    } else {
-      this._super(...arguments);
-    }
+           api.modifyClass("component:composer", {
+  actions: {
+    quotePost(post) {
+      if (!post || post.get("post_number") === 1) {
+        // If the post is the first post, simply return without quick-quoting
+        return false;
+      }
+      return this._super(...arguments);
+    },
+    replyToPost(post) {
+      if (!post || post.get("post_number") === 1) {
+        // If the post is the first post, open the composer for a new reply without quick-quoting
+        this.open({ action: Composer.REPLY });
+        return false;
+      }
+      return this._super(...arguments);
+    },
   },
 });
 
